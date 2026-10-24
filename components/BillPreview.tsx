@@ -487,10 +487,10 @@ const BillPreview: React.FC<BillPreviewProps> = ({ data, isPdf = false }) => {
               <XCircle className="w-5 h-5" />
               <h3 className="font-bold uppercase tracking-widest text-sm">Cancellation Policy</h3>
             </div>
-            <div className="bg-white border-l-8 border-black p-6 border-y border-r border-[#E0E0E0] rounded-r-xl shadow-sm space-y-1.5">
-              <p className="text-black font-bold text-[12px]">Cancellation 7 days before arrival: Refundable.</p>
-              <p className="text-black font-bold text-[12px]">Cancellation 5 days before arrival: 50% refund.</p>
-              <p className="text-black font-bold text-[12px]">Cancellation 1 day before arrival: Non-refundable.</p>
+            <div className="bg-white border-l-8 border-black p-6 border-y border-r border-[#E0E0E0] rounded-r-xl shadow-sm space-y-2">
+              <p className="text-black font-bold text-[12px]">• Cancellations made 7 days or more before arrival are eligible for a full refund.</p>
+              <p className="text-black font-bold text-[12px]">• Cancellations made 5–6 days before arrival are eligible for a 50% refund.</p>
+              <p className="text-black font-bold text-[12px]">• Cancellations made less than 5 days before arrival are non-refundable.</p>
             </div>
           </section>
         </div>
