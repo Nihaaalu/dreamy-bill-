@@ -93,7 +93,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ data, onChange, onSubmit }) =
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    const val = type === 'number' ? parseFloat(value) || 0 : value;
+    const val = type === 'number' ? (value === '' ? '' : (parseFloat(value) || 0)) : value;
     onChange({ ...data, [name]: val });
   };
 
@@ -530,10 +530,20 @@ const BookingForm: React.FC<BookingFormProps> = ({ data, onChange, onSubmit }) =
               </>
             )}
             {data.bookingMode === BookingMode.PER_ROOM && (
-              <div className="space-y-1">
-                <label className={labelClasses}>Price Per Room (₹)</label>
-                <input type="number" name="amtPerRoom" value={data.amtPerRoom} onChange={handleChange} className={inputClasses} placeholder="Enter rate..." />
-              </div>
+              <>
+                <div className="space-y-1">
+                  <label className={labelClasses}>
+                    {data.roomType === RoomType.COTTAGE ? 'Price Per Cottage (₹)' : 'Price Per Room (₹)'}
+                  </label>
+                  <input type="number" name="amtPerRoom" value={data.amtPerRoom || ''} onChange={handleChange} className={inputClasses} placeholder="Enter rate..." />
+                </div>
+                {data.roomType === RoomType.COTTAGE_PLUS_ROOM && (
+                  <div className="space-y-1">
+                    <label className={labelClasses}>Price Per Cottage (₹)</label>
+                    <input type="number" name="amtPerCottage" value={data.amtPerCottage || ''} onChange={handleChange} className={inputClasses} placeholder="Enter rate..." />
+                  </div>
+                )}
+              </>
             )}
           </div>
 
@@ -586,11 +596,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ data, onChange, onSubmit }) =
         <div className="p-5 rounded-xl border-2 bg-[#111111] border-white text-white shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex flex-col items-center md:items-start">
             <span className="text-[10px] font-bold uppercase tracking-widest text-[#AAAAAA]">Total Amount:</span>
-            <span className="text-xl font-bold">₹ {data.roomRent}</span>
+            <span className="text-xl font-bold">₹ {Number(data.roomRent) || 0}</span>
           </div>
           <div className="flex flex-col items-center md:items-end">
             <span className="text-[10px] font-bold uppercase tracking-widest text-[#AAAAAA]">Balance Amount:</span>
-            <span className="text-2xl font-black">{data.roomRent - data.advanceCollected === 0 ? 'FULL PAYMENT DONE' : `₹ ${data.roomRent - data.advanceCollected}`}</span>
+            <span className="text-2xl font-black">{((Number(data.roomRent) || 0) - (Number(data.advanceCollected) || 0)) === 0 ? 'FULL PAYMENT DONE' : `₹ ${(Number(data.roomRent) || 0) - (Number(data.advanceCollected) || 0)}`}</span>
           </div>
         </div>
       </section>

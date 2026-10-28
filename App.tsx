@@ -44,6 +44,7 @@ const App: React.FC = () => {
     amtPerAdult: 0,
     amtPerChild: 0,
     amtPerRoom: 0,
+    amtPerCottage: 0,
     numExtraRooms: 0,
     pricePerExtraRoom: 0,
     numExtraPersons: 0,
@@ -97,13 +98,52 @@ const App: React.FC = () => {
   // Payment Calculation Logic
   let calculatedRent = 0;
   if (bookingData.bookingMode === BookingMode.PER_PERSON) {
-    const baseCost = (bookingData.adults * (bookingData.amtPerAdult || 0)) + (bookingData.children * (bookingData.amtPerChild || 0));
-    const extraRoomsCost = (bookingData.numExtraRooms || 0) * (bookingData.pricePerExtraRoom || 0);
-    calculatedRent = (baseCost + extraRoomsCost) * nights;
+    const adultPrice = Number(bookingData.amtPerAdult) || 0;
+    const childPrice = Number(bookingData.amtPerChild) || 0;
+    const genericPersonPrice = Number((bookingData as any).amtPerPerson ?? (bookingData as any).pricePerPerson) || 0;
+
+    const baseCost = genericPersonPrice > 0
+      ? ((Number(bookingData.adults) || 0) + (Number(bookingData.children) || 0)) * genericPersonPrice
+      : ((Number(bookingData.adults) || 0) * adultPrice) + ((Number(bookingData.children) || 0) * childPrice);
+
+    const extraRooms = Number(bookingData.numExtraRooms) || 0;
+    const extraRoomPrice = Number(bookingData.pricePerExtraRoom) || 0;
+    const extraRoomsCost = (extraRooms > 0 && extraRoomPrice > 0) ? (extraRooms * extraRoomPrice) : 0;
+
+    calculatedRent = baseCost + extraRoomsCost;
   } else if (bookingData.bookingMode === BookingMode.PER_ROOM) {
-    const baseCost = bookingData.numRooms * (bookingData.amtPerRoom || 0);
-    const extraPersonsCost = (bookingData.numExtraPersons || 0) * (bookingData.pricePerExtraPerson || 0);
-    calculatedRent = (baseCost + extraPersonsCost) * nights;
+    let baseCost = 0;
+    const pricePerRoom = Number(bookingData.amtPerRoom) || 0;
+    const pricePerCottage = Number(
+      bookingData.amtPerCottage !== undefined && bookingData.amtPerCottage !== null && bookingData.amtPerCottage !== 0 && (bookingData.amtPerCottage as any) !== ''
+        ? bookingData.amtPerCottage
+        : ((bookingData as any).pricePerCottage !== undefined && (bookingData as any).pricePerCottage !== null && (bookingData as any).pricePerCottage !== 0 && (bookingData as any).pricePerCottage !== ''
+          ? (bookingData as any).pricePerCottage
+          : bookingData.amtPerRoom)
+    ) || 0;
+
+    if (bookingData.roomType === RoomType.COTTAGE) {
+      const cottageCount = Number(bookingData.numCottages !== undefined && bookingData.numCottages !== null && (bookingData.numCottages as any) !== '' ? bookingData.numCottages : 1) || 0;
+      baseCost = cottageCount * (pricePerCottage || pricePerRoom);
+    } else if (bookingData.roomType === RoomType.COTTAGE_PLUS_ROOM) {
+      const roomCount = Number(bookingData.numRooms) || 0;
+      const cottageCount = Number(bookingData.numCottages !== undefined && bookingData.numCottages !== null && (bookingData.numCottages as any) !== '' ? bookingData.numCottages : 1) || 0;
+      baseCost = (roomCount * pricePerRoom) + (cottageCount * pricePerCottage);
+    } else if (bookingData.roomType === RoomType.ROOM) {
+      const roomCount = Number(bookingData.numRooms) || 0;
+      baseCost = roomCount * pricePerRoom;
+    } else {
+      const unitCount = Number(bookingData.numRooms || bookingData.numCottages || 1) || 0;
+      baseCost = unitCount * pricePerRoom;
+    }
+
+    const extraPersons = Number(bookingData.numExtraPersons) || 0;
+    const extraPersonPrice = Number(bookingData.pricePerExtraPerson) || 0;
+    const extraPersonsCost = (extraPersons > 0 && extraPersonPrice > 0) ? (extraPersons * extraPersonPrice) : 0;
+
+    calculatedRent = baseCost + extraPersonsCost;
+  } else {
+    calculatedRent = Number(bookingData.roomRent) || 0;
   }
 
   const activeBookingData: BookingData = {

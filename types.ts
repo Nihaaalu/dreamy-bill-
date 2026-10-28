@@ -50,6 +50,7 @@ export interface BookingData {
   amtPerAdult: number;
   amtPerChild: number;
   amtPerRoom: number;
+  amtPerCottage?: number;
   numExtraRooms?: number;
   pricePerExtraRoom?: number;
   numExtraPersons?: number;
