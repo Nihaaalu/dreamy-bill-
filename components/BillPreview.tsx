@@ -155,19 +155,19 @@ const BillPreview: React.FC<BillPreviewProps> = ({ data, isPdf = false }) => {
                   {data.bookingMode === BookingMode.PER_PERSON && (
                     <div className="pt-0.5 space-y-1.5">
                       <p className="flex justify-between items-center">
-                        <span>Rate per Adult: ₹{data.amtPerAdult.toLocaleString('en-IN')} × {data.adults}</span>
-                        <span className="font-semibold text-black text-right tabular-nums">₹{(data.adults * data.amtPerAdult).toLocaleString('en-IN')}</span>
+                        <span>Rate per Adult: ₹{(Number(data.amtPerAdult) || 0).toLocaleString('en-IN')} × {Number(data.adults) || 0}</span>
+                        <span className="font-semibold text-black text-right tabular-nums">₹{((Number(data.adults) || 0) * (Number(data.amtPerAdult) || 0)).toLocaleString('en-IN')}</span>
                       </p>
-                      {data.children > 0 && (
+                      {(Number(data.children) || 0) > 0 && (
                         <p className="flex justify-between items-center">
-                          <span>Rate per Child: ₹{data.amtPerChild.toLocaleString('en-IN')} × {data.children}</span>
-                          <span className="font-semibold text-black text-right tabular-nums">₹{(data.children * data.amtPerChild).toLocaleString('en-IN')}</span>
+                          <span>Rate per Child: ₹{(Number(data.amtPerChild) || 0).toLocaleString('en-IN')} × {Number(data.children) || 0}</span>
+                          <span className="font-semibold text-black text-right tabular-nums">₹{((Number(data.children) || 0) * (Number(data.amtPerChild) || 0)).toLocaleString('en-IN')}</span>
                         </p>
                       )}
-                      {!!(data.numExtraRooms && data.pricePerExtraRoom) && (
+                      {!!(Number(data.numExtraRooms) > 0 && Number(data.pricePerExtraRoom) > 0) && (
                         <p className="flex justify-between items-center">
-                          <span>Extra Rooms: ₹{data.pricePerExtraRoom.toLocaleString('en-IN')} × {data.numExtraRooms}</span>
-                          <span className="font-semibold text-black text-right tabular-nums">₹{(data.numExtraRooms * data.pricePerExtraRoom).toLocaleString('en-IN')}</span>
+                          <span>Extra Rooms: ₹{(Number(data.pricePerExtraRoom) || 0).toLocaleString('en-IN')} × {Number(data.numExtraRooms) || 0}</span>
+                          <span className="font-semibold text-black text-right tabular-nums">₹{((Number(data.numExtraRooms) || 0) * (Number(data.pricePerExtraRoom) || 0)).toLocaleString('en-IN')}</span>
                         </p>
                       )}
                       <p className="flex justify-between items-center pt-1 border-t border-black/10">
@@ -186,15 +186,15 @@ const BillPreview: React.FC<BillPreviewProps> = ({ data, isPdf = false }) => {
                             <span className="font-semibold text-black text-right tabular-nums">₹{((Number(data.numRooms) || 0) * (Number(data.amtPerRoom) || 0)).toLocaleString('en-IN')}</span>
                           </p>
                           <p className="flex justify-between items-center">
-                            <span>Cottage Rate: ₹{(Number(data.amtPerCottage || data.amtPerRoom) || 0).toLocaleString('en-IN')} × {Number(data.numCottages ?? 1) || 0}</span>
-                            <span className="font-semibold text-black text-right tabular-nums">₹{((Number(data.numCottages ?? 1) || 0) * (Number(data.amtPerCottage || data.amtPerRoom) || 0)).toLocaleString('en-IN')}</span>
+                            <span>Cottage Rate: ₹{(Number(data.amtPerCottage) || 0).toLocaleString('en-IN')} × {Number(data.numCottages ?? 1) || 0}</span>
+                            <span className="font-semibold text-black text-right tabular-nums">₹{((Number(data.numCottages ?? 1) || 0) * (Number(data.amtPerCottage) || 0)).toLocaleString('en-IN')}</span>
                           </p>
                         </>
                       ) : (
                         <>
                           <p className="flex justify-between items-center">
                             <span>{data.roomType === 'Cottage' ? 'Cottage Rate:' : 'Room Rate:'}</span>
-                            <span className="font-semibold text-black text-right tabular-nums">₹{(Number(data.roomType === 'Cottage' ? (data.amtPerCottage || data.amtPerRoom) : data.amtPerRoom) || 0).toLocaleString('en-IN')}</span>
+                            <span className="font-semibold text-black text-right tabular-nums">₹{(Number(data.roomType === 'Cottage' ? (data.amtPerRoom || data.amtPerCottage) : data.amtPerRoom) || 0).toLocaleString('en-IN')}</span>
                           </p>
                           <p className="flex justify-between items-center">
                             <span>{data.roomType === 'Cottage' ? 'Cottages Booked:' : 'Rooms Booked:'}</span>

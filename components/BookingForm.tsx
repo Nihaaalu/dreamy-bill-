@@ -163,6 +163,17 @@ const BookingForm: React.FC<BookingFormProps> = ({ data, onChange, onSubmit }) =
 
   const isInvalidDateRange = data.checkInDate && data.checkOutDate && data.numNights <= 0;
 
+  const minCheckOutDate = (() => {
+    if (!data.checkInDate) return undefined;
+    const parts = data.checkInDate.split('-').map(Number);
+    if (parts.length !== 3 || parts.some(Number.isNaN)) return undefined;
+    const nextUtc = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2] + 1));
+    const yyyy = nextUtc.getUTCFullYear();
+    const mm = String(nextUtc.getUTCMonth() + 1).padStart(2, '0');
+    const dd = String(nextUtc.getUTCDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  })();
+
   return (
     <form onSubmit={handleSubmit} className="space-y-12 bg-[#000000] border border-[#2A2A2A] p-6 md:p-10 rounded-2xl shadow-sm">
       {/* Booking Mode Selector */}
@@ -226,6 +237,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ data, onChange, onSubmit }) =
                 label="Check-out Date"
                 name="checkOutDate"
                 required
+                min={minCheckOutDate}
                 value={data.checkOutDate}
                 onChange={handleChange}
                 labelClasses={labelClasses}
